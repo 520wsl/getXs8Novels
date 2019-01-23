@@ -24,8 +24,8 @@ import time
 import moment
 import redis
 
-from getText.getTest18.SaveBookToRedis import SaveBookToRedis
-from getText.getTest18.getBookTXT import GetBookTXT
+from SaveBookToRedis import SaveBookToRedis
+from getBookTXT import GetBookTXT
 from public.Logger import Logger
 from public.RedisToo import RedisToo
 
