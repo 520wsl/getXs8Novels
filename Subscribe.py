@@ -49,7 +49,7 @@ class Subscribe():
 
     def getBookTXTAction(self, params):
         self.logger.debug(params)
-        book = GetBookTXT(maxBookNex=params['maxBookNex'], getBookIdsListSize=params['getBookIdsListSize'])
+        book = GetBookTXT(maxCatalogNex=params['maxCatalogNex'], getBookIdsListSize=params['getBookIdsListSize'])
         book.contentsLoad()
         self.logger.debug('getBookTXT处理结束')
 
