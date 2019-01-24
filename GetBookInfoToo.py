@@ -29,7 +29,7 @@ from public.ConfigParser import ConfigParser
 
 class GetBookInfoToo():
     def __init__(self):
-        self.b_title = 'GetFreeBookTXT'
+        self.b_title = 'GetBookInfoToo'
         self.b_second = 1
         self.b_timeStr = moment.now().format('YYYY-MM-DD-HH-mm-ss')
 
