@@ -41,10 +41,11 @@ class GetBookTXT(object):
         self.b_bookPageSize = 10
         self.b_bookIdSize = 5
         self.b_bookTXTGroupSize = 10
-        self.b_second = 1
         self.b_fs = 0
         self.b_maxCatalogNex = int(maxCatalogNex)
         self.b_title = 'getBookTXT'
+        self.b_second = 1
+        self.b_timeStr = moment.now().format('YYYY-MM-DD-HH-mm-ss')
 
         self.b_catalogList = []
         self.b_bookTXTData = []
@@ -55,8 +56,8 @@ class GetBookTXT(object):
         self.con = ConfigParser()
         self.logName = self.intLogName()
         self.mySql = MySqlToo(logName=self.logName)
-        self.dataToo = DataToo(logName=self.logName, second=self.b_second)
-        self.logger = Logger(logname=self.logName, loglevel=1, logger=self.b_title).getlog()
+        self.dataToo = DataToo(logName=self.b_title, second=self.b_second, timeStr=self.b_timeStr)
+        self.logger = Logger(logname=self.dataToo.initLogName(), loglevel=1, logger=self.b_title).getlog()
         self.rds = RedisToo()
         self.timeToo = TimeToo()
         self.b_heads = self.initHeads()
@@ -138,7 +139,7 @@ class GetBookTXT(object):
             bkd['listTaskSize'], link,
             self.b_second))
         self.second()
-        text = self.dataToo.getText(link=link, heads=self.b_heads)
+        text = self.dataToo.getText(link=link)
         if len(text['data']) <= 0:
             self.errorUrl.append(link)
             self.countNum += 1

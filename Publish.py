@@ -22,6 +22,8 @@ import json
 import time
 
 import moment
+
+from public.DataToo import DataToo
 from public.Logger import Logger
 from public.RedisToo import RedisToo
 
@@ -29,14 +31,12 @@ from public.RedisToo import RedisToo
 class Publish():
     def __init__(self):
         self.b_title = 'Publish'
+        self.b_second = 1
+        self.b_timeStr = moment.now().format('YYYY-MM-DD-HH-mm-ss')
 
         self.rds = RedisToo()
-        self.logName = self.intLogName()
-        self.logger = Logger(logname=self.logName, loglevel=1, logger=self.b_title).getlog()
-
-    def intLogName(self):
-        timeStr = moment.now().format('YYYY-MM-DD-HH-mm-ss')
-        return '%s_%s.log' % (self.b_title, timeStr)
+        self.dataToo = DataToo(logName=self.b_title, second=self.b_second, timeStr=self.b_timeStr)
+        self.logger = Logger(logname=self.dataToo.initLogName(), loglevel=1, logger=self.b_title).getlog()
 
     def saveBookToRedisAction(self):
         environmentalType = input("请输入0、1、2（0：dev,1:test,2:online）: >>")

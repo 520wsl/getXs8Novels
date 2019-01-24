@@ -33,13 +33,14 @@ from public.Logger import Logger
 
 class SaveBookToRedis():
     def __init__(self, environmentalType, maxBookNex):
-        self.b_title = 'SaveBookToRedis'
         self.b_bookPageSize = 10
         self.b_bookIdSize = 5
         self.b_bookTXTGroupSize = 100
-        self.b_second = 1
         self.b_environmentalType = int(environmentalType)
         self.b_maxBookNex = int(maxBookNex)
+        self.b_title = 'SaveBookToRedis'
+        self.b_second = 1
+        self.b_timeStr = moment.now().format('YYYY-MM-DD-HH-mm-ss')
 
         self.b_catalogList = []
         self.b_bookTXTData = []
@@ -51,8 +52,8 @@ class SaveBookToRedis():
         self.logName = self.intLogName()
         self.rds = RedisToo()
         self.mySql = MySqlToo(logName=self.logName)
-        self.dataToo = DataToo(logName=self.logName, second=self.b_second)
-        self.logger = Logger(logname=self.logName, loglevel=1, logger=self.b_title).getlog()
+        self.dataToo = DataToo(logName=self.b_title, second=self.b_second, timeStr=self.b_timeStr)
+        self.logger = Logger(logname=self.dataToo.initLogName(), loglevel=1, logger=self.b_title).getlog()
         self.timeToo = TimeToo()
         self.b_mysqlStr = self.initMysqlStr()
 
@@ -77,10 +78,6 @@ class SaveBookToRedis():
             'getBookIdsSql': getBookIdsSql,
             'getCatalogData': "SELECT url FROM links WHERE fs = 0 AND book_Id in "
         }
-
-    def intLogName(self):
-        timeStr = moment.now().format('YYYY-MM-DD-HH-mm-ss')
-        return '%s_%s.log' % (self.b_title, timeStr)
 
     def second(self):
         time.sleep(self.b_second)

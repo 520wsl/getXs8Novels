@@ -24,15 +24,19 @@ import random
 import threading
 import time
 
+import moment
 import requests
 
 from public.Logger import Logger
 
 
 class DataToo():
-    def __init__(self, logName, second):
+    def __init__(self, logName, second, timeStr):
         self.b_second = second
-        self.logger = Logger(logname=logName, loglevel=1, logger="DataToo").getlog()
+        self.b_timeStr = timeStr
+        self.b_logName = logName
+        self.logger = Logger(logname=self.initLogName(), loglevel=1,
+                             logger="DataToo").getlog()
 
     def groupingData(self, list, pageSize, fixed=False):
         listSize = len(list)
@@ -82,13 +86,6 @@ class DataToo():
 
     def getHTMLTxt(self, link, heads):
         result = {'status': '200', 'data': '', 'link': link}
-
-        # r = requests.get(link, headers=heads)
-        # r.encoding = "utr-8"
-        #
-        # result['data'] = r.text
-        # return result
-
         try:
             r = requests.get(link, headers=heads, timeout=10)
             r.encoding = "utr-8"
@@ -100,15 +97,58 @@ class DataToo():
             result['status'] = '403'
         return result
 
+    def getJsonTxt(self, link, heads):
+        result = {'status': '200', 'data': '', 'link': link}
+        try:
+            r = requests.get(link, headers=heads)
+            r.encoding = "utr-8"
+            result['data'] = json.loads(r.text)
+        except:
+            second = random.randint(0, self.b_second * 60)
+            self.logger.debug('[ %s ][ 403 ] 可能被拦截了暂停 %s 秒后 抓取下一条链接 !\n' % (link, second))
+            time.sleep(second)
+            result['status'] = '403'
+        return result
+
     def listToStr(self, data_info):
-        # links = ','.join(data_info)
         return tuple(data_info)
-        # for item in links:
-            # print(item)
-            # print(str(item))
 
-        # return str(','.join(data_info))
-
-    def getText(self, link, heads):
+    def getText(self, link):
         if len(link) <= 0: return
+        heads = self.initHeads('html')
         return self.getHTMLTxt(link=link, heads=heads)
+
+    def getJson(self, link):
+        if len(link) <= 0: return
+        heads = self.initHeads('json')
+        return self.getJsonTxt(link=link, heads=heads)
+
+    def initHeads(self,type):
+        if type == 'html':
+            heads = {}
+            heads['Accept'] = 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8'
+            heads['Accept-Encoding'] = 'gzip, deflate, br'
+            heads['Accept-Language'] = 'zh-CN,zh;q=0.9'
+            heads['Connection'] = 'keep-alive'
+            heads['Cookie'] = 'newstatisticUUID=1547076169_1527614489; qdrs=0%7C3%7C0%7C0%7C1; qdgd=1'
+            heads['Host'] = 'www.xs8.cn'
+            heads['Upgrade-Insecure-Requests'] = '1'
+            heads['Referer'] = ''
+            heads[
+                'User-Agent'] = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.92 Safari/537.36'
+            return heads
+        elif type == 'json' :
+            heads = {}
+            heads['Accept'] = 'application/json, text/javascript, */*; q=0.01'
+            heads['Accept-Encoding'] = 'gzip, deflate, br'
+            heads['Accept-Language'] = 'zh-CN,zh;q=0.9'
+            heads['Connection'] = 'keep-alive'
+            heads['Cookie'] = 'newstatisticUUID=1547123562_436906659; qdrs=0%7C3%7C0%7C0%7C1; qdgd=1'
+            heads['Host'] =  'www.xs8.cn'
+            heads['Referer'] = ''
+            heads[
+                'User-Agent'] = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.67 Safari/537.36'
+            heads['X-Requested-With'] = 'XMLHttpRequest'
+
+    def initLogName(self):
+        return '%s_%s.log' % (self.b_logName, self.b_timeStr)

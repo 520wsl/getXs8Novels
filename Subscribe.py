@@ -26,6 +26,7 @@ import redis
 
 from SaveBookToRedis import SaveBookToRedis
 from getBookTXT import GetBookTXT
+from public.DataToo import DataToo
 from public.Logger import Logger
 from public.RedisToo import RedisToo
 
@@ -33,13 +34,12 @@ from public.RedisToo import RedisToo
 class Subscribe():
     def __init__(self):
         self.b_title = 'Subscribe'
-        self.rds = RedisToo()
-        self.logName = self.intLogName()
-        self.logger = Logger(logname=self.logName, loglevel=1, logger=self.b_title).getlog()
+        self.b_second = 1
+        self.b_timeStr = moment.now().format('YYYY-MM-DD-HH-mm-ss')
 
-    def intLogName(self):
-        timeStr = moment.now().format('YYYY-MM-DD-HH-mm-ss')
-        return '%s_%s.log' % (self.b_title, timeStr)
+        self.rds = RedisToo()
+        self.dataToo = DataToo(logName=self.b_title, second=self.b_second, timeStr=self.b_timeStr)
+        self.logger = Logger(logname=self.dataToo.initLogName(), loglevel=1, logger=self.b_title).getlog()
 
     def saveBookToRedisAction(self, params):
         self.logger.debug(params)
