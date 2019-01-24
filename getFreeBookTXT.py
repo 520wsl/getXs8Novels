@@ -128,6 +128,8 @@ class GetFreeBookTXT():
         bookInfo['chapterTotalCnt'] = jsonData['data']['chapterTotalCnt']
         bookInfo['catalog'] = jsonData['data']['vs']
 
+        self.logger.info(bookInfo)
+
         # html = etree.HTML(text['data'])
         # content_list = html.xpath('//*[@id="limit-list"]/div/ul/li')
         #
@@ -182,5 +184,5 @@ class GetFreeBookTXT():
 
 if __name__ == '__main__':
     getFreeBookTXT = GetFreeBookTXT()
-    getFreeBookTXT.getBookList()
+    getFreeBookTXT.getBookCatalogInfo('12377456203685303')
     pass
