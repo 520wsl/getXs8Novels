@@ -26,7 +26,7 @@ import time
 
 import moment
 import requests
-
+import urllib
 from public.Logger import Logger
 
 
@@ -86,15 +86,20 @@ class DataToo():
 
     def getHTMLTxt(self, link, heads):
         result = {'status': '200', 'data': '', 'link': link}
-        try:
-            r = requests.get(link, headers=heads, timeout=10)
-            r.encoding = "utr-8"
-            result['data'] = r.text
-        except:
-            second = random.randint(0, self.b_second * 60)
-            self.logger.debug('[ %s ][ 403 ] 可能被拦截了暂停 %s 秒后 抓取下一条链接 !\n' % (link, second))
-            time.sleep(second)
-            result['status'] = '403'
+
+        r = requests.get(link, headers=heads, timeout=10)
+        r.encoding = "utr-8"
+        result['data'] = r.text
+
+        # try:
+        #     r = requests.get(link, headers=heads, timeout=10)
+        #     r.encoding = "utr-8"
+        #     result['data'] = r.text
+        # except:
+        #     second = random.randint(0, self.b_second * 60)
+        #     self.logger.debug('[ %s ][ 403 ] 可能被拦截了暂停 %s 秒后 抓取下一条链接 !\n' % (link, second))
+        #     time.sleep(second)
+        #     result['status'] = '403'
         return result
 
     def getJsonTxt(self, link, heads):
@@ -130,7 +135,7 @@ class DataToo():
             heads['Accept-Encoding'] = 'gzip, deflate, br'
             heads['Accept-Language'] = 'zh-CN,zh;q=0.9'
             heads['Connection'] = 'keep-alive'
-            heads['Cookie'] = 'newstatisticUUID=1547076169_1527614489; qdrs=0%7C3%7C0%7C0%7C1; qdgd=1'
+            heads['Cookie'] = 'newstatisticUUID=1547894850_1903849637; qdrs=0%7C3%7C0%7C0%7C1; qdgd=1'
             heads['Host'] = 'www.xs8.cn'
             heads['Upgrade-Insecure-Requests'] = '1'
             heads['Referer'] = ''
