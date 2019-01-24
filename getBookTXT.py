@@ -28,6 +28,7 @@ import redis
 from lxml import etree
 
 from GetBookInfoToo import GetBookInfoToo
+from SaveBookInfoToMySqlToo import SaveBookInfoToMySqlToo
 from public.MySqlToo import MySqlToo
 from public.Logger import Logger
 from public.DataToo import DataToo
@@ -60,12 +61,14 @@ class GetBookTXT(object):
         self.logger = Logger(logname=self.dataToo.initLogName(), loglevel=1, logger=self.b_title).getlog()
         self.rds = RedisToo()
         self.timeToo = TimeToo()
-        self.getBookInfoToo = GetBookInfoToo()
+        self.getBookInfoToo = GetBookInfoToo(second=self.b_second, dataToo=self.dataToo, logger=self.logger)
+        self.saveBookInfoToMySqlToo = SaveBookInfoToMySqlToo(second=self.b_second, logger=self.logger,
+                                                             getBookInfoToo=self.getBookInfoToo,
+                                                             mySql=self.mySql, dataToo=self.dataToo)
         self.b_mysqlStr = self.initMysqlStr()
 
     def initMysqlStr(self):
         return {
-            'saveText': "INSERT INTO `links` (`url`,article) VALUES (%s, %s) ON DUPLICATE KEY UPDATE article = VALUES (article), nex = nex+1",
             'getCatalogData': "SELECT url FROM links WHERE fs = %s  AND nex < %s AND book_Id in " % (
                 self.b_fs, self.b_maxCatalogNex)
         }
@@ -109,18 +112,6 @@ class GetBookTXT(object):
             if len(listTaskList[i]) <= 0: continue
             self.dataToo.threads(listTaskList[i], self.getCatalogData)
 
-    def getArticle(self, link):
-        content = self.getBookInfoToo.getBookTxtInfo(link)
-        if len(content) <= 0:
-            self.countNum += 1
-            return
-        res = self.mySql.batchAdd(sql=self.b_mysqlStr['saveText'], data_info=[(link, content)])
-        if res:
-            self.errorUrl.append(link)
-        self.countNum += 1
-        self.logger.debug('第 %s 条链接： %s\n' % (self.countNum, res))
-        self.b_bookTXTData.append((link, content))
-
     #     6、循环调用 getBookTxt()
 
     # 根据章节 catalogId、url 抓取页面数据
@@ -139,7 +130,10 @@ class GetBookTXT(object):
             start = time.time()
             for j in range(len(listTaskList[i])):
                 time.sleep(self.b_second)
-                self.getArticle(listTaskList[i][j])
+                res = self.saveBookInfoToMySqlToo.saveText(listTaskList[i][j])
+                self.countNum += 1
+                if res : self.errorUrl.append(listTaskList[i][j])
+                self.logger.debug('第 %s 条链接： %s\n' % (self.countNum, res))
             end = time.time()
             self.logger.debug('书籍组 [ %s / %s ] 目录组 [ %s / %s ] : 开始时间：%s ： 结束时间：%s ==> 共消耗时间 ：%s 秒 [ %s ]\n' % (
                 index + 1, len(self.b_catalogList), i + 1, bookCatalogUrlGroupingData['listGroupSize'],
@@ -158,8 +152,6 @@ class GetBookTXT(object):
                 i + 1, len(self.b_catalogList), float(start), float(end), int(float(end) - float(start)),
                 self.timeToo.changeTime(int(float(end) - float(start)))))
             self.logger.info('*-*-*-*-*-*-' * 15)
-            # res = mySql.batchAdd(sql=self.b_mysqlStr['saveText'], data_info=self.b_bookTXTData)
-            # if res: self.b_bookTXTData = []
 
     # 文章内容存储
     def bookTxtLoad(self, bookData):

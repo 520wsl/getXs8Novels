@@ -22,16 +22,14 @@ import time
 import moment
 from lxml import etree
 from datetime import datetime
+from public.ConfigParser import ConfigParser
 from public.DataToo import DataToo
 from public.Logger import Logger
-from public.ConfigParser import ConfigParser
 
 
 class GetBookInfoToo():
-    def __init__(self):
-        self.b_title = 'GetBookInfoToo'
-        self.b_second = 1
-        self.b_timeStr = moment.now().format('YYYY-MM-DD-HH-mm-ss')
+    def __init__(self, second, dataToo, logger):
+        self.b_second = second
 
         self.errorUrl = []
         self.request404 = []
@@ -42,15 +40,15 @@ class GetBookInfoToo():
         self.bookTxtCountNum = 0
 
         self.con = ConfigParser()
-        self.dataToo = DataToo(logName=self.b_title, second=self.b_second, timeStr=self.b_timeStr)
-        self.logger = Logger(logname=self.dataToo.initLogName(), loglevel=1, logger=self.b_title).getlog()
+        self.dataToo = dataToo
+        self.logger = logger
 
     def exceptions(self, html, link, text):
         title = html.xpath('//title/text()')
         requestIntercept = html.xpath('//div[@class="empty-text"]//strong/text()')
         request404 = html.xpath('//h3[@class="lang"]/text()')
         requestNode = html.xpath('//div[@class="no-data"]/h3/text()')
-        self.logger.debug('链接【 %s 】：HTML解析异常！' % (link))
+        self.logger.debug('链接 [ %s ] ：HTML解析异常！' % (link))
         self.logger.debug('[title]：%s' % (title))
 
         if len(requestIntercept) > 0:
@@ -72,13 +70,14 @@ class GetBookInfoToo():
 
     def noData(self, link, text):
         self.errorUrl.append(link)
-        self.logger.debug('链接【 %s 】：数据抓取异常 ：%s\n' % (link, text))
+        self.logger.debug('链接 [ %s ] ：数据抓取异常 ：%s\n' % (link, text))
 
     def getContentList(self, link, xpath):
+        contentList = []
         text = self.dataToo.getText(link=link)
         if len(text['data']) <= 0:
             self.noData(link, text)
-            return
+            return contentList
         html = etree.HTML(text['data'])
         contentList = html.xpath(xpath)
         if len(contentList) <= 0:
@@ -111,7 +110,7 @@ class GetBookInfoToo():
                 'synoptic': str(synoptic),
                 'img_url': img_url
             })
-        self.logger.info('书籍列【 %s 】表信息采集完成：%s' % (link, bookInfoList))
+        self.logger.info('书籍列 [ %s ] 表信息采集完成：%s' % (link, bookInfoList))
         self.freeBookCountNum += 1
         return bookInfoList
 
@@ -154,7 +153,7 @@ class GetBookInfoToo():
             bookId) + '&_=' + str(
             int(unix))
 
-    def getBookCatalogInfo(self, bookId):
+    def getCatalogInfo(self, bookId):
         link = self.bookLinkLoad(bookId)
         time.sleep(self.b_second)
         jsonData = self.dataToo.getJson(link=link)
@@ -167,29 +166,35 @@ class GetBookInfoToo():
         self.bookCatalogCountNum += 1
         return jsonData['data']
 
-    def getBookTxtInfo(self, link):
+    def getTxtInfo(self, link):
+        content = ''
         time.sleep(self.b_second)
         content_list = self.getContentList(link=link, xpath='//div[@class="read-content j_readContent"]')
         if len(content_list) <= 0:
             self.freeBookCountNum += 1
-            return
+            return content
         content_list = content_list[0]
         content = etree.tostring(content_list, method='xml').decode('utf-8')
-        self.logger.info('书籍【 %s 】章节信息采集完成：%s' % (link, content))
+        self.logger.info('书籍【 %s 】章节信息采集完成' % (link))
         self.bookTxtCountNum += 1
         return content
 
 
 if __name__ == '__main__':
-    b = GetBookInfoToo()
+    b_title = 'GetBookInfoToo'
+    b_second = 1
+    b_timeStr = moment.now().format('YYYY-MM-DD-HH-mm-ss')
+    dataToo = DataToo(logName=b_title, second=b_second, timeStr=b_timeStr)
+    logger = Logger(logname=dataToo.initLogName(), loglevel=1, logger=b_title).getlog()
+    b = GetBookInfoToo(second=b_second, dataToo=dataToo, logger=logger)
     msg = [
         ('0、[ toAllBookListPageGetBookList ] 小说列表页抓取',
          "[ paramsCase ]: ",
          "https://www.xs8.cn/all?pageSize=500&gender=2&catId=-1&isFinish=-1&isVip=-1&size=-1&updT=-1&orderBy=0&pageNum=1"),
         ('1、[ toFreeBookListPageGetBookList ] 免费小说列表页抓取',
          "[ paramsCase ]: ", b.con.getConfig('webConfig', 'freeBookListPage')),
-        ('2、[ getBookCatalogInfo ] 小说章节目录抓取', "[ paramsCase ]: ", "12388396604821403"),
-        ('3、[ getBookTxtInfo ] 小说文章抓取',
+        ('2、[ getCatalogInfo ] 小说章节目录抓取', "[ paramsCase ]: ", "12388396604821403"),
+        ('3、[ getTxtInfo ] 小说文章抓取',
          "[ paramsCase ]: ", "https://www.xs8.cn/chapter/12388396604821403/34416289199831222")
     ]
 
@@ -215,8 +220,8 @@ if __name__ == '__main__':
         elif actionType == 1:
             b.toFreeBookListPageGetBookList(params)
         elif actionType == 2:
-            b.getBookCatalogInfo(params)
+            b.getCatalogInfo(params)
         elif actionType == 3:
-            b.getBookTxtInfo(params)
+            b.getTxtInfo(params)
     else:
         print('取消抓取')

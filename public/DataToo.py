@@ -66,8 +66,6 @@ class DataToo():
 
     def threads(self, taskList, target):
         nloops = range(len(taskList))
-        # self.logger.debug('threads:==>\n\t %s \n\t %s' % (nloops, taskList))
-
         threads = []
         for i in nloops:
             if len(taskList[i]) <= 0: continue
@@ -86,20 +84,20 @@ class DataToo():
 
     def getHTMLTxt(self, link, heads):
         result = {'status': '200', 'data': '', 'link': link}
+        #
+        # r = requests.get(link, headers=heads, timeout=100)
+        # r.encoding = "utr-8"
+        # result['data'] = r.text
 
-        r = requests.get(link, headers=heads, timeout=10)
-        r.encoding = "utr-8"
-        result['data'] = r.text
-
-        # try:
-        #     r = requests.get(link, headers=heads, timeout=10)
-        #     r.encoding = "utr-8"
-        #     result['data'] = r.text
-        # except:
-        #     second = random.randint(0, self.b_second * 60)
-        #     self.logger.debug('[ %s ][ 403 ] 可能被拦截了暂停 %s 秒后 抓取下一条链接 !\n' % (link, second))
-        #     time.sleep(second)
-        #     result['status'] = '403'
+        try:
+            r = requests.get(link, headers=heads, timeout=100)
+            r.encoding = "utr-8"
+            result['data'] = r.text
+        except:
+            second = random.randint(0, self.b_second * 60)
+            self.logger.debug('[ %s ][ 403 ] 可能被拦截了暂停 %s 秒后 抓取下一条链接 !\n' % (link, second))
+            time.sleep(second)
+            result['status'] = '403'
         return result
 
     def getJsonTxt(self, link, heads):
@@ -128,7 +126,7 @@ class DataToo():
         heads = self.initHeads('json')
         return self.getJsonTxt(link=link, heads=heads)
 
-    def initHeads(self,type):
+    def initHeads(self, type):
         if type == 'html':
             heads = {}
             heads['Accept'] = 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8'
@@ -142,14 +140,14 @@ class DataToo():
             heads[
                 'User-Agent'] = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.92 Safari/537.36'
             return heads
-        elif type == 'json' :
+        elif type == 'json':
             heads = {}
             heads['Accept'] = 'application/json, text/javascript, */*; q=0.01'
             heads['Accept-Encoding'] = 'gzip, deflate, br'
             heads['Accept-Language'] = 'zh-CN,zh;q=0.9'
             heads['Connection'] = 'keep-alive'
             heads['Cookie'] = 'newstatisticUUID=1547123562_436906659; qdrs=0%7C3%7C0%7C0%7C1; qdgd=1'
-            heads['Host'] =  'www.xs8.cn'
+            heads['Host'] = 'www.xs8.cn'
             heads['Referer'] = ''
             heads[
                 'User-Agent'] = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.67 Safari/537.36'

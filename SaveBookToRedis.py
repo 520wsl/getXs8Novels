@@ -49,10 +49,9 @@ class SaveBookToRedis():
         self.countNum = 0
 
         self.con = ConfigParser()
-        self.logName = self.intLogName()
         self.rds = RedisToo()
-        self.mySql = MySqlToo(logName=self.logName)
         self.dataToo = DataToo(logName=self.b_title, second=self.b_second, timeStr=self.b_timeStr)
+        self.mySql = MySqlToo(logName=self.dataToo.initLogName())
         self.logger = Logger(logname=self.dataToo.initLogName(), loglevel=1, logger=self.b_title).getlog()
         self.timeToo = TimeToo()
         self.b_mysqlStr = self.initMysqlStr()
