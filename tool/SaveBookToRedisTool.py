@@ -22,7 +22,7 @@ import time
 
 import moment
 
-from GetMySqlBookInfoDataTool import GetMySqlBookInfoDataToo
+from tool.GetMySqlBookInfoDataTool import GetMySqlBookInfoDataToo
 from public.DataTool import DataTool
 from public.Logger import Logger
 from public.MySqlTool import MySqlTool

@@ -19,12 +19,10 @@ __mtime__ = '2019/1/20'
                   ┗┻┛  ┗┻┛
 """
 import json
-import time
 
 import moment
-import redis
 
-from SaveBookToRedisTool import SaveBookToRedisTool
+from tool.SaveBookToRedisTool import SaveBookToRedisTool
 from getBookTXT import GetBookTXT
 from public.DataTool import DataTool
 from public.Logger import Logger

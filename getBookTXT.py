@@ -21,8 +21,8 @@ __mtime__ = '2019/1/12'
 import moment
 import time
 
-from GetBookInfoTool import GetBookInfoTool
-from SaveBookInfoToMySqlTool import SaveBookInfoToMySqlToo
+from tool.GetBookInfoTool import GetBookInfoTool
+from tool.SaveBookInfoToMySqlTool import SaveBookInfoToMySqlToo
 from public.MySqlTool import MySqlTool
 from public.Logger import Logger
 from public.DataTool import DataTool
