@@ -36,7 +36,7 @@ class SaveBookToRedisTool():
         self.b_maxCatalogNex = 1
         self.b_environmentalType = int(environmentalType)
         self.b_title = 'SaveBookToRedis'
-        self.b_second = 2
+        self.b_second = 1
         self.b_timeStr = moment.now().format('YYYY-MM-DD-HH-mm-ss')
 
         self.rds = RedisTool()

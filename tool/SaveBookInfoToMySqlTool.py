@@ -31,13 +31,8 @@ from public.MySqlTool import MySqlTool
 class SaveBookInfoToMySqlToo():
     def __init__(self, second, logger, getBookInfoToo, mySql, dataToo):
         self.b_second = second
-        self.b_fs = 0
-        self.b_maxCatalogNex = 0
 
         self.m_saveText = "INSERT INTO `links` (`url`,article) VALUES (%s, %s) ON DUPLICATE KEY UPDATE article = VALUES (article), nex = nex+1"
-
-        self.m_getCatalogData = "SELECT url FROM links WHERE fs = %s  AND nex < %s AND book_Id in " % (
-            self.b_fs, self.b_maxCatalogNex)
 
         self.getBookInfoToo = getBookInfoToo
         self.dataToo = dataToo
