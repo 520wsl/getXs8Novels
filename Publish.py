@@ -23,9 +23,9 @@ import time
 
 import moment
 
-from public.DataToo import DataToo
+from public.DataTool import DataTool
 from public.Logger import Logger
-from public.RedisToo import RedisToo
+from public.RedisTool import RedisTool
 
 
 class Publish():
@@ -34,20 +34,19 @@ class Publish():
         self.b_second = 1
         self.b_timeStr = moment.now().format('YYYY-MM-DD-HH-mm-ss')
 
-        self.rds = RedisToo()
-        self.dataToo = DataToo(logName=self.b_title, second=self.b_second, timeStr=self.b_timeStr)
-        self.logger = Logger(logname=self.dataToo.initLogName(), loglevel=1, logger=self.b_title).getlog()
+        self.rds = RedisTool()
+        self.dataTool = DataTool(logName=self.b_title, second=self.b_second, timeStr=self.b_timeStr)
+        self.logger = Logger(logname=self.dataTool.initLogName(), loglevel=1, logger=self.b_title).getlog()
 
     def saveBookToRedisAction(self):
         environmentalType = input("请输入0、1、2（0：dev,1:test,2:online）: >>")
-        maxBookNex = 0
         self.logger.debug(
-            '\n\n参数确认: 环境 : %s | 最大抓取数 : %s \n\n' % (environmentalType, maxBookNex))
+            '\n\n参数确认: 环境 : %s \n\n' % (environmentalType))
         time.sleep(1)
         isStart = input("是否开始？(y/n): >>")
         if (isStart == 'y'):
             self.rds.p.publish('bookChannel', str(
-                json.dumps({'type': 'SaveBookToRedis', 'environmentalType': environmentalType, 'maxBookNex': maxBookNex
+                json.dumps({'type': 'SaveBookToRedis', 'environmentalType': environmentalType
                             })))
         else:
             print('取消抓取')

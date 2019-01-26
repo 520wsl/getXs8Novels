@@ -24,11 +24,11 @@ import time
 import moment
 import redis
 
-from SaveBookToRedis import SaveBookToRedis
+from SaveBookToRedisTool import SaveBookToRedisTool
 from getBookTXT import GetBookTXT
-from public.DataToo import DataToo
+from public.DataTool import DataTool
 from public.Logger import Logger
-from public.RedisToo import RedisToo
+from public.RedisTool import RedisTool
 
 
 class Subscribe():
@@ -36,15 +36,15 @@ class Subscribe():
         self.b_title = 'Subscribe'
         self.b_second = 1
         self.b_timeStr = moment.now().format('YYYY-MM-DD-HH-mm-ss')
-
-        self.rds = RedisToo()
-        self.dataToo = DataToo(logName=self.b_title, second=self.b_second, timeStr=self.b_timeStr)
+        self.b_rdsKeyName = 'bookIdsList2'
+        self.rds = RedisTool()
+        self.dataToo = DataTool(logName=self.b_title, second=self.b_second, timeStr=self.b_timeStr)
         self.logger = Logger(logname=self.dataToo.initLogName(), loglevel=1, logger=self.b_title).getlog()
 
     def saveBookToRedisAction(self, params):
         self.logger.debug(params)
-        book = SaveBookToRedis(environmentalType=params['environmentalType'], maxBookNex=params['maxBookNex'])
-        book.bookTxtLoad()
+        book = SaveBookToRedisTool(environmentalType=params['environmentalType'])
+        book.saveAllBookListToRedis(rdsKeyName=self.b_rdsKeyName)
         self.logger.debug('saveBookToRedisAction处理结束')
 
     def getBookTXTAction(self, params):

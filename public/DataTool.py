@@ -24,19 +24,17 @@ import random
 import threading
 import time
 
-import moment
 import requests
-import urllib
 from public.Logger import Logger
 
 
-class DataToo():
+class DataTool():
     def __init__(self, logName, second, timeStr):
         self.b_second = second
         self.b_timeStr = timeStr
         self.b_logName = logName
         self.logger = Logger(logname=self.initLogName(), loglevel=1,
-                             logger="DataToo").getlog()
+                             logger="DataTool").getlog()
 
     def groupingData(self, list, pageSize, fixed=False):
         listSize = len(list)
@@ -113,7 +111,7 @@ class DataToo():
             result['status'] = '403'
         return result
 
-    def listToStr(self, data_info):
+    def listToStr(self, data_info=[]):
         return tuple(data_info)
 
     def getText(self, link):
@@ -155,3 +153,9 @@ class DataToo():
 
     def initLogName(self):
         return '%s_%s.log' % (self.b_logName, self.b_timeStr)
+
+    def getLinkArr(self, data):
+        linkArr = []
+        for item in data:
+            linkArr.append(item)
+        return linkArr

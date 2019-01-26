@@ -23,11 +23,11 @@ import moment
 from lxml import etree
 from datetime import datetime
 from public.ConfigParser import ConfigParser
-from public.DataToo import DataToo
+from public.DataTool import DataTool
 from public.Logger import Logger
 
 
-class GetBookInfoToo():
+class GetBookInfoTool():
     def __init__(self, second, dataToo, logger):
         self.b_second = second
 
@@ -184,9 +184,9 @@ if __name__ == '__main__':
     b_title = 'GetBookInfoToo'
     b_second = 1
     b_timeStr = moment.now().format('YYYY-MM-DD-HH-mm-ss')
-    dataToo = DataToo(logName=b_title, second=b_second, timeStr=b_timeStr)
+    dataToo = DataTool(logName=b_title, second=b_second, timeStr=b_timeStr)
     logger = Logger(logname=dataToo.initLogName(), loglevel=1, logger=b_title).getlog()
-    b = GetBookInfoToo(second=b_second, dataToo=dataToo, logger=logger)
+    b = GetBookInfoTool(second=b_second, dataToo=dataToo, logger=logger)
     msg = [
         ('0、[ toAllBookListPageGetBookList ] 小说列表页抓取',
          "[ paramsCase ]: ",

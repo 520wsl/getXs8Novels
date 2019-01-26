@@ -34,7 +34,7 @@ def bytes_to_str(s, encoding='utf-8'):
     return s
 
 
-class RedisToo():
+class RedisTool():
     def __init__(self):
         self.con = ConfigParser()
         self.links = []
@@ -56,8 +56,8 @@ class RedisToo():
         return dataList
 
     # 批量添加列表
-    def setListData(self, name='list_name1', lists=[]):
+    def setListData(self, rdsKeyName='list_name1', lists=[]):
         if len(lists) <= 0:
             return False
-        self.r.rpush(name, *lists)
+        self.r.rpush(rdsKeyName, *lists)
         return True

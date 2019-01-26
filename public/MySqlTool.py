@@ -23,7 +23,7 @@ from public.Logger import Logger
 from public.ConfigParser import ConfigParser
 
 
-class MySqlToo():
+class MySqlTool():
     def __init__(self, logName):
         self.con = ConfigParser()
         self.logger = Logger(logname=logName, loglevel=1, logger="MySQLToo").getlog()
@@ -62,7 +62,7 @@ class MySqlToo():
             return False
 
     # 获取列表数据
-    def getListData(self, sql):
+    def getListData(self, sqlStr):
         db = self.openMySqlConfig()
         # 使用cursor()方法获取操作游标
         cursor = db.cursor()
@@ -70,14 +70,14 @@ class MySqlToo():
 
         try:
             # 执行SQL语句
-            cursor.execute(sql)
+            cursor.execute(sqlStr)
             # 获取所有记录列表
             results = cursor.fetchall()
             db.close()
-            self.logger.debug("查询成功[ %s ]: sql==> %s" % (len(results), sql))
+            self.logger.debug("查询成功[ %s ]: sql==> %s" % (len(results), sqlStr))
             return results
         except:
-            self.logger.debug("查询失败: sql==> %s" % (sql))
+            self.logger.debug("查询失败: sql==> %s" % (sqlStr))
             # 关闭数据库连接
             db.close()
             return results

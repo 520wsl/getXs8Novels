@@ -22,10 +22,10 @@ import time
 
 import moment
 
-from GetBookInfoToo import GetBookInfoToo
-from public.DataToo import DataToo
+from GetBookInfoTool import GetBookInfoTool
+from public.DataTool import DataTool
 from public.Logger import Logger
-from public.MySqlToo import MySqlToo
+from public.MySqlTool import MySqlTool
 
 
 class SaveBookInfoToMySqlToo():
@@ -56,10 +56,10 @@ if __name__ == '__main__':
     b_title = 'GetBookInfoToo'
     b_second = 1
     b_timeStr = moment.now().format('YYYY-MM-DD-HH-mm-ss')
-    dataToo = DataToo(logName=b_title, second=b_second, timeStr=b_timeStr)
+    dataToo = DataTool(logName=b_title, second=b_second, timeStr=b_timeStr)
     logger = Logger(logname=dataToo.initLogName(), loglevel=1, logger=b_title).getlog()
-    mySql = MySqlToo(logName=dataToo.initLogName())
-    getBookInfoToo = GetBookInfoToo(second=b_second, dataToo=dataToo, logger=logger)
+    mySql = MySqlTool(logName=dataToo.initLogName())
+    getBookInfoToo = GetBookInfoTool(second=b_second, dataToo=dataToo, logger=logger)
     saveBookInfoToMySqlToo = SaveBookInfoToMySqlToo(second=b_second, logger=logger,
                                                     getBookInfoToo=getBookInfoToo,
                                                     mySql=mySql, dataToo=dataToo)

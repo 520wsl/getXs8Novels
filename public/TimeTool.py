@@ -21,7 +21,7 @@ __mtime__ = '2019/1/18'
 import math
 
 
-class TimeToo():
+class TimeTool():
     def __init__(self):
         pass
 
