@@ -33,34 +33,40 @@ class Publish():
         self.b_title = 'Publish'
         self.b_second = 1
         self.b_timeStr = moment.now().format('YYYY-MM-DD-HH-mm-ss')
-
+        self.b_rdsKeyName = 'bookIdsList'
         self.rds = RedisTool()
         self.dataTool = DataTool(logName=self.b_title, second=self.b_second, timeStr=self.b_timeStr)
         self.logger = Logger(logname=self.dataTool.initLogName(), loglevel=1, logger=self.b_title).getlog()
 
     def saveBookToRedisAction(self):
-        environmentalType = input("请输入0、1、2（0：dev,1:test,2:online）: >>")
-        self.logger.debug(
-            '\n\n参数确认: 环境 : %s \n\n' % (environmentalType))
+
+        environmental = ['dev', 'test', 'online']
+        print('可选环境：')
+        for i in range(len(environmental)):
+            print('\t\t%s : %s' % (i, environmental[i]))
+
+        environmentalType = int(input("请输入0、1、2: >>"))
+        print(
+            '参数确认： 环境 : %s \n' % (environmental[environmentalType]))
         time.sleep(1)
         isStart = input("是否开始？(y/n): >>")
         if (isStart == 'y'):
             self.rds.p.publish('bookChannel', str(
-                json.dumps({'type': 'SaveBookToRedis', 'environmentalType': environmentalType
-                            })))
+                json.dumps(
+                    {'type': 'SaveBookToRedis', 'environmentalType': environmentalType, 'rdsKeyName': self.b_rdsKeyName
+                     })))
         else:
             print('取消抓取')
 
     def getBookTXTAction(self):
-        getBookIdsListSize = input("获取多少组数据（最大10）: >>")
-        maxCatalogNex = 1
+        getBookIdsListSize = input("每次获取多少条链接（最大1000）: >>")
         print(
-            '\n\n参数确认： maxCatalogNex : %s | getBookIdsListSize : %s \n\n' % (maxCatalogNex, getBookIdsListSize))
+            '\n\n参数确认： rdsKeyName : %s | getBookIdsListSize : %s \n\n' % (self.b_rdsKeyName, getBookIdsListSize))
         time.sleep(1)
         isStart = input("是否开始？(y/n): >>")
         if (isStart == 'y'):
             self.rds.p.publish('bookChannel', str(json.dumps(
-                {'type': 'GetBookTXT', 'maxCatalogNex': maxCatalogNex, 'getBookIdsListSize': getBookIdsListSize})))
+                {'type': 'GetBookTXT', 'getBookIdsListSize': getBookIdsListSize, 'rdsKeyName': self.b_rdsKeyName})))
         else:
             print('取消抓取')
 

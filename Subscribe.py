@@ -34,7 +34,6 @@ class Subscribe():
         self.b_title = 'Subscribe'
         self.b_second = 1
         self.b_timeStr = moment.now().format('YYYY-MM-DD-HH-mm-ss')
-        self.b_rdsKeyName = 'bookIdsList2'
         self.rds = RedisTool()
         self.dataToo = DataTool(logName=self.b_title, second=self.b_second, timeStr=self.b_timeStr)
         self.logger = Logger(logname=self.dataToo.initLogName(), loglevel=1, logger=self.b_title).getlog()
@@ -42,14 +41,14 @@ class Subscribe():
     def saveBookToRedisAction(self, params):
         self.logger.debug(params)
         book = SaveBookToRedisTool(environmentalType=params['environmentalType'])
-        book.saveAllBookListToRedis(rdsKeyName=self.b_rdsKeyName)
+        book.saveAllBookListToRedis(rdsKeyName=params['rdsKeyName'])
         self.logger.debug('saveBookToRedisAction处理结束')
 
     def getBookTXTAction(self, params):
         self.logger.debug(params)
-        book = GetBookTXT(maxCatalogNex=params['maxCatalogNex'], getBookIdsListSize=params['getBookIdsListSize'])
+        book = GetBookTXT(getBookIdsListSize=params['getBookIdsListSize'], rdsKeyName=params['rdsKeyName'])
         book.contentsLoad()
-        self.logger.debug('getBookTXT处理结束')
+        self.logger.debug('getBookTXTAction处理结束')
 
 
 if __name__ == '__main__':
