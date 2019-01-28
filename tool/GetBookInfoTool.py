@@ -160,7 +160,7 @@ class GetBookInfoTool():
         if len(jsonData['data']['data']) <= 0:
             self.bookCatalogCountNum += 1
             self.noData(link, jsonData)
-            return
+            return []
 
         self.logger.info('书籍【 %s 】目录信息采集完成：%s' % (link, jsonData['data']))
         self.bookCatalogCountNum += 1

@@ -22,6 +22,7 @@ import json
 
 import moment
 
+from public.MySqlTool import MySqlTool
 from tool.SaveBookToRedisTool import SaveBookToRedisTool
 from getBookTXT import GetBookTXT
 from public.DataTool import DataTool
@@ -37,10 +38,12 @@ class Subscribe():
         self.rds = RedisTool()
         self.dataToo = DataTool(logName=self.b_title, second=self.b_second, timeStr=self.b_timeStr)
         self.logger = Logger(logname=self.dataToo.initLogName(), loglevel=1, logger=self.b_title).getlog()
+        self.mySql = MySqlTool(logName=self.dataToo.initLogName())
 
     def saveBookToRedisAction(self, params):
         self.logger.debug(params)
-        book = SaveBookToRedisTool(environmentalType=params['environmentalType'])
+        book = SaveBookToRedisTool(environmentalType=params['environmentalType'], rds=self.rds, dataToo=self.dataToo,
+                                   mySql=self.mySql, logger=self.logger)
         book.saveAllBookListToRedis(rdsKeyName=params['rdsKeyName'])
         self.logger.debug('saveBookToRedisAction处理结束')
 

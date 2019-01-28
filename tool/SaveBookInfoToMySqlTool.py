@@ -46,6 +46,11 @@ class SaveBookInfoToMySqlToo():
         self.logger.debug('书籍 [ %s ] 文章存储' % (link))
         return self.mySql.batchAdd(sql=self.m_saveText, data_info=[(link, content)])
 
+    def saveCatalog(self,bookId):
+        jsonData = self.getBookInfoToo.getCatalogInfo(bookId=bookId)
+        self.logger.debug(jsonData)
+
+
 
 if __name__ == '__main__':
     b_title = 'GetBookInfoToo'

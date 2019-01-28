@@ -30,7 +30,7 @@ from public.RedisTool import RedisTool
 
 
 class SaveBookToRedisTool():
-    def __init__(self, environmentalType):
+    def __init__(self, environmentalType, rds, dataToo, mySql, logger):
         self.b_bookPageSize = 100
         self.b_fs = 0
         self.b_maxCatalogNex = 1
@@ -39,10 +39,10 @@ class SaveBookToRedisTool():
         self.b_second = 1
         self.b_timeStr = moment.now().format('YYYY-MM-DD-HH-mm-ss')
 
-        self.rds = RedisTool()
-        self.dataToo = DataTool(logName=self.b_title, second=self.b_second, timeStr=self.b_timeStr)
-        self.mySql = MySqlTool(logName=self.dataToo.initLogName())
-        self.logger = Logger(logname=self.dataToo.initLogName(), loglevel=1, logger=self.b_title).getlog()
+        self.rds = rds
+        self.dataToo = dataToo
+        self.mySql = mySql
+        self.logger = logger
         self.getMySqlBookInfoDataToo = GetMySqlBookInfoDataToo(mySql=self.mySql, dataToo=self.dataToo,
                                                                logger=self.logger)
 
@@ -68,6 +68,14 @@ class SaveBookToRedisTool():
 
 
 if __name__ == '__main__':
+    b_title = 'SaveBookToRedisTool'
+    b_second = 1
+    b_timeStr = moment.now().format('YYYY-MM-DD-HH-mm-ss')
+    rds = RedisTool()
+    dataToo = DataTool(logName=b_title, second=b_second, timeStr=b_timeStr)
+    logger = Logger(logname=dataToo.initLogName(), loglevel=1, logger=b_title).getlog()
+    mySql = MySqlTool(logName=dataToo.initLogName())
+
     rdsKeyName = 'bookIdsList3'
 
     environmental = ['dev', 'test', 'online']
@@ -81,7 +89,8 @@ if __name__ == '__main__':
     time.sleep(1)
     isStart = input("是否开始？(y/n): >>")
     if (isStart == 'y'):
-        book = SaveBookToRedisTool(environmentalType=environmentalType)
+        book = SaveBookToRedisTool(environmentalType=environmentalType, rds=rds, dataToo=dataToo, mySql=mySql,
+                                   logger=logger)
         book.saveAllBookListToRedis(rdsKeyName=rdsKeyName)
     else:
         print('取消抓取')
