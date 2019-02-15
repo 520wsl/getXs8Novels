@@ -18,13 +18,10 @@ __mtime__ = '2019/1/20'
                   ┃┫┫  ┃┫┫
                   ┗┻┛  ┗┻┛
 """
-import time
 
 import redis
-import threading
 from public.ConfigParser import ConfigParser
 # 工具类简单，如果是字节，转成str
-from redis import StrictRedis
 
 
 def bytes_to_str(s, encoding='utf-8'):
